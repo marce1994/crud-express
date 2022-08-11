@@ -1,35 +1,27 @@
-import mongoose from "mongoose";
 import { Request, Response } from "express";
-
-const articles = [{
-    id: new mongoose.Types.ObjectId().toString(),
-    title: 'Article 1',
-    author: 'John Doe',
-    body: 'This is the body of article 1'
-}]
+import { CommentService } from "../services";
 
 export default class CommentController {
-    static fetch(req: Request, res: Response, next: Function) {
+    static async findById(req: Request, res: Response, next: Function): Promise<any> {
         try {
-            res.send(articles);
-        } catch (err) {
-            next(err);
-        }
-    }
-
-    static find(req: Request, res: Response, next: Function) {
-        try {
-            const article = articles.find(article => article.id === req.params.id);
+            const article = await CommentService.findById(req.params.id);
             res.send(article);
         } catch (err) {
             next(err);
         }
     }
 
-    static create(req: Request, res: Response, next: Function) {
+    static async fetch(req: Request, res: Response, next: Function): Promise<any> {
         try {
-            const article = { ...req.body.article, id: new mongoose.Types.ObjectId().toString() };
-            articles.push(article);
+            res.send(await CommentService.findByArticleId(req.query.articleId as string));
+        } catch (err) {
+            next(err);
+        }
+    }
+
+    static async create(req: Request, res: Response, next: Function): Promise<any> {
+        try {
+            const article = await CommentService.create(req.body);
             res.send(article);
         }
         catch (err) {
@@ -37,27 +29,18 @@ export default class CommentController {
         }
     }
 
-    static update(req: Request, res: Response, next: Function) {
+    static async update(req: Request, res: Response, next: Function): Promise<any> {
         try {
-            const article = articles.find(article => article.id === req.params.id);
-            if (!article) {
-                return res.status(404).send('Article not found');
-            }
-            const updatedArticle = { ...article, ...req.body.article };
-            articles[articles.indexOf(article)] = updatedArticle;
-            res.send(updatedArticle);
+            const article = await CommentService.update(req.params.id, req.body);
+            res.send(article);
         } catch (err) {
             next(err);
         }
     }
 
-    static remove(req: Request, res: Response, next: Function) {
+    static async remove(req: Request, res: Response, next: Function): Promise<any> {
         try {
-            const article = articles.find(article => article.id === req.params.id);
-            if (!article) {
-                return res.status(404).send('Article not found');
-            }
-            articles.splice(articles.indexOf(article), 1);
+            await CommentService.delete(req.params.id);
             res.end();
         } catch (err) {
             next(err);

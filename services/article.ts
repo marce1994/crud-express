@@ -1,28 +1,30 @@
 
 
-import { articles, Article } from "../models";
+import { Article } from "../models";
 import { CommentService } from "./comment";
+import { Types } from "mongoose";
+import IArticle from "../models/interfaces/IArticle";
 
 class ArticleService {
-    static fetch(){
-        return articles.find({}).lean().exec();
+    static fetch(): Promise<IArticle[]>{
+        return Article.find({}).lean().exec();
     }
 
-    static find(id: String){
-        return articles.findOne({"_id": id});
+    static findById(id: string): Promise<IArticle>{
+        return Article.findOne({"_id": id}).lean().exec();
     }
 
-    static create(article: Article){
-        return articles.create(article);
+    static create(article: IArticle): Promise<IArticle>{
+        return Article.create(article);
     }
 
-    static update(id: String, article: Article){
-        return articles.findByIdAndUpdate(id, article).lean().exec();
+    static update(id: string, article: IArticle): Promise<IArticle>{
+        return Article.findByIdAndUpdate(id, article).exec();
     }
     
-    static delete(id: String){
-        CommentService.deleteByArticle(id);
-        return articles.findByIdAndRemove(id).lean().exec();
+    static delete(id: string): Promise<any>{
+        CommentService.deleteByArticleId(id);
+        return Article.findByIdAndRemove(id).exec();
     }
 }
 

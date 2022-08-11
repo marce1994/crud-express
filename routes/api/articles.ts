@@ -3,7 +3,7 @@ import { ArticleController } from '../../controllers';
 export default (router: any) => {
     router.get('/', ArticleController.fetch);
     router.post('/', ArticleController.create);
-    router.get('/:id', ArticleController.find);
+    router.get('/:id', ArticleController.findById);
     router.put('/:id', ArticleController.update);
     router.delete('/:id', ArticleController.remove);
 

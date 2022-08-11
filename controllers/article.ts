@@ -1,5 +1,4 @@
 import { Request, Response } from "express";
-import { Types } from 'mongoose';
 import { ArticleService, CommentService } from "../services";
 
 export default class ArticleController {
@@ -12,9 +11,9 @@ export default class ArticleController {
         }
     }
 
-    static async find(req: Request, res: Response, next: Function) {
+    static async findById(req: Request, res: Response, next: Function) {
         try {
-            const article = await ArticleService.find(req.params.id);
+            const article = await ArticleService.findById(req.params.id);
             res.send(article);
         }
         catch (err) {
@@ -44,6 +43,7 @@ export default class ArticleController {
 
     static async remove(req: Request, res: Response, next: Function) {
         try {
+            await CommentService.deleteByArticleId(req.params.id);
             await ArticleService.delete(req.params.id);
             res.end();
         }

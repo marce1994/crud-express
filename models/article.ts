@@ -1,20 +1,12 @@
-import { model, Types, Schema, Document } from 'mongoose';
+import { model, Schema } from 'mongoose';
+import IArticle from './interfaces/IArticle';
 
-// Comment interface
-interface Article extends Document {
-    title: string;
-    author: string;
-    body: string;
-}
-
-// Schema
-const schema = new Schema<Article>({
+const schema = new Schema<IArticle>({
     title: { type: String, required: true },
     author: { type: String, required: true },
     body: { type: String, required: true },
 }, { timestamps: true });
 
-const articles = model<Article>('Article', schema);
+const Article = model<IArticle>('Article', schema);
 
-// Export
-export { articles, Article };
+export default Article;

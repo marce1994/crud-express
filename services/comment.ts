@@ -1,32 +1,32 @@
-import { comments, Comment } from "../models";
+import { Comment } from "../models";
+import IComment from "../models/interfaces/IComment";
+
 
 class CommentService {
-    static fetch() {
-        return comments.find({}).lean().exec();
+
+    static async findById(id: String): Promise<IComment> {
+        return await Comment.findById(id).exec();
     }
 
-    static findByArticleId(articleId: String) {
-        return comments.find({ "articleId": articleId });
+    static findByArticleId(articleId: String): Promise<IComment[]> {
+        return Comment.find({ "articleId": articleId }).lean().exec();
     }
 
-    static find(id: String) {
-        return comments.findOne({ "_id": id });
+    static create(comment: IComment): Promise<IComment> {
+        return Comment.create(comment);
+    }
+    
+    static update(id: String, comment: IComment): Promise<IComment> {
+        console.log(comment);
+        return Comment.findByIdAndUpdate(id, comment).exec();
     }
 
-    static create(comment: Comment) {
-        return comments.create(comment);
+    static delete(id: String): Promise<any> {
+        return Comment.findByIdAndRemove(id).exec();
     }
 
-    static update(id: String, comment: Comment) {
-        return comments.findByIdAndUpdate(id, comment).lean().exec();
-    }
-
-    static delete(id: String) {
-        return comments.findByIdAndRemove(id).lean().exec();
-    }
-
-    static deleteByArticle(articleId: String) {
-        return comments.findOneAndDelete({ "articleId": articleId }).lean().exec();
+    static deleteByArticleId(articleId: String): Promise<any> {
+        return Comment.deleteMany({ "article": articleId }).exec();
     }
 }
 

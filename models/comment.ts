@@ -1,21 +1,13 @@
-import { model, Types, Schema, Document } from "mongoose";
-import { Article } from "./article";
+import { model, Schema } from "mongoose";
+import IComment from "./interfaces/IComment";
 
-// Comment interface
-interface Comment extends Document {
-    author: string;
-    body: string;
-    article: Article;
-}
-
-// Schema
-const schema = new Schema<Comment>({
+const { ObjectId } = Schema.Types;
+const schema = new Schema<IComment>({
     author: { type: String, required: true },
     body: { type: String, required: true },
-    article: { type: Types.ObjectId, ref: 'Article' },
+    articleId: { type: ObjectId, required: true }
 }, { timestamps: true });
 
-const comments = model<Comment>('Comment', schema);
+const Comment = model<IComment>('Comment', schema);
 
-// Export
-export { comments, Comment };
+export default Comment;
