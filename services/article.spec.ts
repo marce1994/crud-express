@@ -1,11 +1,9 @@
 import { ArticleService } from './article';
 import * as mockingoose from 'mockingoose';
-import { Article } from '../models';
+import { Article, Comment } from '../models';
 import IArticle from '../models/interfaces/IArticle';
 
 describe('ArticleService', () => {
-    jest.setTimeout(100000);
-
     it('should return an empty Article array', async () => {
         mockingoose(Article).toReturn([] as Array<IArticle>, 'find');
         const articles = await ArticleService.fetch();
@@ -15,16 +13,15 @@ describe('ArticleService', () => {
     // Its not working...
     it('should create and return the Article', async () => {
         let article = <IArticle>{
-            _id: '5d8f8f8f8f8f8f8f8f8f8f8',
             title: "Test",
             author: "Author",
             body: "Body"
         };
 
-        mockingoose(Article).toReturn(article, 'save');
+        Article.create = jest.fn().mockReturnValue(Promise.resolve(article));
 
         const createdArticle = await ArticleService.create(article);
-        expect(createdArticle).toEqual(article); 
+        expect(createdArticle).toMatchObject(article); 
     });
 
     it('should return the Article by id', async () => {
@@ -35,9 +32,33 @@ describe('ArticleService', () => {
         };
 
         mockingoose(Article).toReturn(article, 'findOne');
-        const createdArticle = await ArticleService.findById('5d8f8f8f8f8f8f8f8f8f8f8');
-        expect(createdArticle).toBeCalledWith(expect.objectContaining({
-            _id: '5d8f8f8f8f8f8f8f8f8f8f8'
-        })); 
+
+        const foundArticle = await ArticleService.findById('5d8f8f8f8f8f8f8f8f8f8f8');
+        expect(foundArticle).toMatchObject(article);
+    });
+
+    it('should update the Article by id', async () => {
+        let article = <IArticle>{
+            title: "Test",
+        };
+
+        mockingoose(Article).toReturn(article, 'findOneAndUpdate');
+        const updatedArticle = await ArticleService.update('5d8f8f8f8f8f8f8f8f8f8f8', article);
+        expect(updatedArticle).toMatchObject(article);
+    });
+
+    it('should delete the Article by id', async () => {
+        mockingoose(Comment).toReturn(Promise.resolve(null), 'deleteMany');
+        mockingoose(Article).toReturn(Promise.resolve(null), 'findByIdAndRemove');
+
+        let spyComment = jest.spyOn(Comment, 'deleteMany');
+        let spyArticle = jest.spyOn(Article, 'findByIdAndRemove');
+
+        const deletedArticle = await ArticleService.delete('5d8f8f8f8f8f8f8f8f8f8f8');
+
+        expect(spyComment).toHaveBeenCalled();
+        expect(spyArticle).toHaveBeenCalled();
+
+        expect(deletedArticle).toBeUndefined();
     });
 });

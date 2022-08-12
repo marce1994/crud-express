@@ -17,7 +17,6 @@ class CommentService {
     }
     
     static update(id: String, comment: IComment): Promise<IComment> {
-        console.log(comment);
         return Comment.findByIdAndUpdate(id, comment).exec();
     }
 

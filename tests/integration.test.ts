@@ -59,7 +59,6 @@ describe('ArticleService', () => {
 
     let createdComment = {} as IComment;
     test('should create a comment', async () => {
-        console.log(createdArticle);
         const comment = <IComment>{
             body: "Comment",
             author: "Author",
@@ -77,7 +76,6 @@ describe('ArticleService', () => {
     });
 
     test('should return a list of comments', async () => {
-        console.log(createdComment);
         req = { query: { articleId: createdArticle._id } };
         await CommentController.fetch(req as any, res as any, next);
 
