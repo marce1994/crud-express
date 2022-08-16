@@ -3,9 +3,8 @@ import IComment from "../models/interfaces/IComment";
 
 
 class CommentService {
-
-    static async findById(id: String): Promise<IComment> {
-        return await Comment.findById(id).exec();
+    static findById(id: String): Promise<IComment | null> {
+        return Comment.findById(id).exec();
     }
 
     static findByArticleId(articleId: String): Promise<IComment[]> {
@@ -15,9 +14,9 @@ class CommentService {
     static create(comment: IComment): Promise<IComment> {
         return Comment.create(comment);
     }
-    
+
     static update(id: String, comment: IComment): Promise<IComment> {
-        return Comment.findByIdAndUpdate(id, comment).exec();
+        return Comment.findByIdAndUpdate(id, comment, { new: true }).exec();
     }
 
     static delete(id: String): Promise<any> {

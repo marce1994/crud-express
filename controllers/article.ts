@@ -1,8 +1,9 @@
 import { Request, Response } from "express";
+import { Types } from "mongoose";
 import { ArticleService, CommentService } from "../services";
 
 export default class ArticleController {
-    static async fetch(req: Request, res: Response, next: Function) {
+    static async fetch(_req: Request, res: Response, next: Function) {
         try {
             res.send(await ArticleService.fetch());
         }
@@ -13,8 +14,15 @@ export default class ArticleController {
 
     static async findById(req: Request, res: Response, next: Function) {
         try {
+            if (!Types.ObjectId.isValid(req.params.id))
+                return res.status(400).send({ message: "Invalid id" });
+
             const article = await ArticleService.findById(req.params.id);
-            res.send(article);
+
+            if (!article)
+                return res.status(404).send({ message: "Article not found" });
+
+            return res.send(article);
         }
         catch (err) {
             next(err);
@@ -23,8 +31,7 @@ export default class ArticleController {
 
     static async create(req: Request, res: Response, next: Function) {
         try {
-            const article = await ArticleService.create(req.body);
-            res.send(article);
+            return res.send(await ArticleService.create(req.body));
         }
         catch (err) {
             next(err);
@@ -33,8 +40,13 @@ export default class ArticleController {
 
     static async update(req: Request, res: Response, next: Function) {
         try {
-            const updatedArticle = await ArticleService.update(req.params.id, req.body);
-            res.send(updatedArticle);
+            if (!Types.ObjectId.isValid(req.params.id))
+                return res.status(400).send({ message: "Invalid id" });
+
+            if (!await ArticleService.findById(req.params.id))
+                return res.status(404).send({ message: "Article not found" });
+
+            return res.send(await ArticleService.update(req.params.id, req.body));
         }
         catch (err) {
             next(err);
@@ -43,9 +55,15 @@ export default class ArticleController {
 
     static async remove(req: Request, res: Response, next: Function) {
         try {
+            if (!Types.ObjectId.isValid(req.params.id))
+                return res.status(400).send({ message: "Invalid id" });
+
+            if (!await ArticleService.findById(req.params.id))
+                return res.status(404).send({ message: "Article not found" });
+
             await CommentService.deleteByArticleId(req.params.id);
             await ArticleService.delete(req.params.id);
-            res.end();
+            return res.end();
         }
         catch (err) {
             next(err);

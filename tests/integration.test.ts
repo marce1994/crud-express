@@ -76,7 +76,7 @@ describe('ArticleService', () => {
     });
 
     test('should return a list of comments', async () => {
-        req = { query: { articleId: createdArticle._id } };
+        req = { params: { id: createdArticle._id } };
         await CommentController.fetch(req as any, res as any, next);
 
         expect(next).not.toHaveBeenCalled();
@@ -128,7 +128,7 @@ describe('ArticleService', () => {
     });
 
     test('should return an empty list of comments', async () => {
-        req = { query: { articleId: createdArticle._id } };
+        req = { params: { id: createdArticle._id } };
         await CommentController.fetch(req as any, res as any, next);
 
         expect(next).not.toHaveBeenCalled();
