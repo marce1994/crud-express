@@ -55,6 +55,7 @@
     "mockgoose": "^8.0.4",
     "mockingoose": "^2.15.2",
     "mongodb-memory-server": "^8.8.0",
+    "node-mocks-http": "^1.11.0",
     "nodemon": "^2.0.19",
     "sinon": "^14.0.0",
     "ts-jest": "^28.0.7",

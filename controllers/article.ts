@@ -61,7 +61,6 @@ export default class ArticleController {
             if (!await ArticleService.findById(req.params.id))
                 return res.status(404).send({ message: "Article not found" });
 
-            await CommentService.deleteByArticleId(req.params.id);
             await ArticleService.delete(req.params.id);
             return res.end();
         }

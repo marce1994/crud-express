@@ -1,14 +1,19 @@
 import { Request, Response } from "express";
 import { Types } from "mongoose";
-import { CommentService } from "../services";
+import { ArticleService, CommentService } from "../services";
 
 export default class CommentController {
     static async findById(req: Request, res: Response, next: Function): Promise<any> {
         try {
             if (!Types.ObjectId.isValid(req.params.id))
-                res.status(400).send({ message: "Invalid id" });
-            else
-                res.send(await CommentService.findById(req.params.id));
+                return res.status(400).send({ message: "Invalid id" });
+
+            const comment = await CommentService.findById(req.params.id);
+
+            if (!comment)
+                return res.status(404).send({ message: "Comment not found" });
+
+            return res.send(await CommentService.findById(req.params.id));
         } catch (err) {
             next(err);
         }
@@ -17,10 +22,12 @@ export default class CommentController {
     static async fetch(req: Request, res: Response, next: Function): Promise<any> {
         try {
             if (!Types.ObjectId.isValid(req.params.id))
-                res.status(400).send({ message: "Invalid id" });
-            else
-                res.send(await CommentService.findByArticleId(req.params.id));
+                return res.status(400).send({ message: "Invalid id" });
 
+            if(!await ArticleService.findById(req.params.id))
+                return res.status(404).send({ message: "Article not found" });
+            
+            return res.send(await CommentService.findByArticleId(req.params.id));
         } catch (err) {
             next(err);
         }
@@ -52,7 +59,7 @@ export default class CommentController {
         try {
             if (!Types.ObjectId.isValid(req.params.id))
                 res.status(400).send({ message: "Invalid id" });
-            else if (!await CommentService.findById(req.params.id)){
+            else if (!await CommentService.findById(req.params.id)) {
                 res.status(404).send({ message: "Comment not found" });
             } else {
                 await CommentService.delete(req.params.id);
